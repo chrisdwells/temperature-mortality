@@ -22,10 +22,11 @@ gmst_in = pd.read_csv(gmst)
 gmst_2000_2019 = np.mean(gmst_in[(2000 <= gmst_in['year']) & 
                      (gmst_in['year']<= 2019)]['gmst'])
 
-gmst_1970_1999 = np.mean(gmst_in[(1970 <= gmst_in['year']) & 
-                     (gmst_in['year']<= 1999)]['gmst'])
+gmst_offset = gmst_2000_2019
+# gmst_1970_1999 = np.mean(gmst_in[(1970 <= gmst_in['year']) & 
+#                      (gmst_in['year']<= 1999)]['gmst'])
 
-gmst_offset = gmst_2000_2019 - gmst_1970_1999
+# gmst_offset = gmst_2000_2019 - gmst_1970_1999
 
 #%%
 
@@ -69,8 +70,8 @@ for impact in impacts.keys():
         plt.plot(temps_plot, fit(temps_plot, *params_in), color=impacts[impact],
                  linestyle='dashed')
 
-plt.xlabel(f'GMST 1970-99 (offset: {np.around(gmst_offset, decimals=3)}K)')
-plt.ylabel('Mortality cf 1980 (solid), cf 2010 (dashed)')
+plt.xlabel(f'GMST cf pi (offset: {np.around(gmst_offset, decimals=3)}K)')
+plt.ylabel('Mortality cf pi (solid), cf 2010 (dashed)')
 plt.legend()
 
 #%%
@@ -126,6 +127,6 @@ for impact in impacts.keys():
                  linestyle = linestyle_list[perc_i],
                  label=f'{impact} {100*percentile}', color=impacts[impact])
 
-plt.xlabel(f'GMST 1970-99 (offset: {np.around(gmst_offset, decimals=3)}K)')
-plt.ylabel('Mortality cf 1980 (solid), cf 2010 (dashed)')
+plt.xlabel(f'GMST cf pi (offset: {np.around(gmst_offset, decimals=3)}K)')
+plt.ylabel('Mortality cf pi (solid), cf 2010 (dashed)')
 plt.legend()
