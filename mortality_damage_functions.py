@@ -12,6 +12,7 @@ def fit(x, a, beta_t, beta_t2):
 impacts = {
     'hot':'red', 
     'cold':'blue', 
+    'net':'black',
     }
 
 percs = ['low', 'mid', 'high']
