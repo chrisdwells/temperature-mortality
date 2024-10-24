@@ -12,7 +12,7 @@ def fit(x, a, beta_t, beta_t2):
 impacts = {
     'hot':'red', 
     'cold':'blue', 
-    'net':'black',
+    # 'net':'black',
     }
 
 percs = ['low', 'mid', 'high']
@@ -31,7 +31,7 @@ gmst_offset = gmst_2000_2019
 
 #%%
 
-temps_plot = np.linspace(0, 4.5, 100)
+temps_plot = np.linspace(0, 5, 100)
 
 params = {}
 
