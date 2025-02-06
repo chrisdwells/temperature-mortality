@@ -4,6 +4,10 @@ import numpy as np
 from scipy.optimize import curve_fit
 import copy
 import scipy.stats
+from matplotlib.lines import Line2D
+
+figdir = '../figures'
+datadir = '../data'
 
 def fit(x, a, beta_t, beta_t2):
     yhat = a + beta_t*x + beta_t2*x**2
@@ -17,7 +21,7 @@ impacts = {
 
 percs = ['low', 'mid', 'high']
 
-gmst = 'data/AR6_GMST.csv'
+gmst = f'{datadir}/AR6_GMST.csv'
 gmst_in = pd.read_csv(gmst)
 
 gmst_2000_2019 = np.mean(gmst_in[(2000 <= gmst_in['year']) & 
@@ -40,7 +44,7 @@ for impact in impacts.keys():
     
     for perc in percs:
             
-        mort_file = f'data/Bressler_fig3_{impact}_{perc}.csv'
+        mort_file = f'{datadir}/Bressler_fig3_{impact}_{perc}.csv'
         df_in = pd.read_csv(mort_file)
         
         temps = df_in['Temperature'].values
@@ -75,6 +79,10 @@ plt.xlabel(f'GMST cf pi (offset: {np.around(gmst_offset, decimals=3)}K)')
 plt.ylabel('Mortality cf pi (solid), cf 2010 (dashed)')
 plt.legend()
 
+plt.tight_layout()
+plt.savefig(f'{figdir}/temp_mort.png', dpi=100)
+plt.clf()    
+
 #%%
 
 def opt(x, q025_desired, q50_desired, q975_desired):
@@ -103,13 +111,14 @@ for impact in impacts.keys():
 
 #%%
 
-percentiles = np.linspace(0.05, 0.95, 19)
+params_percentiles = {}
 
-percentiles = np.asarray([0.1, 0.5, 0.9])
+percentiles = np.asarray([0.025, 0.5, 0.975])
 
 linestyle_list = ['dotted', 'solid', 'dashed']
 
 for impact in impacts.keys():
+    params_percentiles[impact] = {}
     
     for perc_i, percentile in enumerate(percentiles):
         vals = []
@@ -122,12 +131,64 @@ for impact in impacts.keys():
             
         params_percentile, _ = curve_fit(
             fit, temps_stats, vals)
-             
+        
+        params_percentiles[impact][percentile] = params_percentile
+        
+#%%
+
+
+for impact in impacts.keys():
     
-        plt.plot(temps_plot, fit(temps_plot, *params_percentile), 
-                 linestyle = linestyle_list[perc_i],
+    for perc in percs:
+            
+        mort_file = f'{datadir}/Bressler_fig3_{impact}_{perc}.csv'
+        df_in = pd.read_csv(mort_file)
+        
+        temps = df_in['Temperature'].values
+        morts = df_in['Mortality'].values
+    
+        temps_offset = temps + gmst_offset
+    
+        plt.scatter(temps_offset, morts, color=impacts[impact])
+    
+    
+        params_in, _ = curve_fit(
+            fit, temps_offset, morts)
+            
+        plt.plot(temps_plot, fit(temps_plot, *params_in), color=impacts[impact],
+                 linestyle='--')
+        
+
+    plt.xlabel(f'GMST cf pi (offset: {np.around(gmst_offset, decimals=3)}K)')
+    plt.ylabel('Mortality cf pi (solid), cf 2001-20 (dashed)')
+    # plt.legend()
+
+    
+    for perc_i, percentile in enumerate(percentiles):
+
+        params_in = params_percentiles[impact][percentile]             
+    
+        plt.plot(temps_plot, fit(temps_plot, *params_in), 
+                 # linestyle = linestyle_list[perc_i],
                  label=f'{impact} {100*percentile}', color=impacts[impact])
 
-plt.xlabel(f'GMST cf pi (offset: {np.around(gmst_offset, decimals=3)}K)')
-plt.ylabel('Mortality cf pi (solid), cf 2010 (dashed)')
-plt.legend()
+    # plt.xlabel(f'GMST cf pi (offset: {np.around(gmst_offset, decimals=3)}K)')
+    # plt.ylabel('Mortality cf pi (solid), cf 2010 (dashed)')
+    # plt.legend()
+
+
+handles = []
+for impact in impacts.keys():
+    handles.append(Line2D([0], [0], label=impact, marker='.', markersize=10, 
+         markeredgecolor=impacts[impact], markerfacecolor=impacts[impact], linestyle=''))
+
+
+handles.append(Line2D([0], [0], label='Rebased, 2.5-97.5', color='grey'))
+handles.append(Line2D([0], [0], linestyle='--', label='Quadratic, 2.5-97.5', color='grey'))
+
+plt.legend(handles=handles)
+
+    
+plt.tight_layout()
+plt.savefig(f'{figdir}/temp_mort_percentiles.png', dpi=100)
+# plt.clf()     
