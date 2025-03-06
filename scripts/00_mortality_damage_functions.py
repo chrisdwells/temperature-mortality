@@ -5,6 +5,7 @@ from scipy.optimize import curve_fit
 import copy
 import scipy.stats
 from matplotlib.lines import Line2D
+import pickle
 
 figdir = '../figures'
 datadir = '../data'
@@ -80,8 +81,8 @@ plt.ylabel('Mortality cf pi (solid), cf 2010 (dashed)')
 plt.legend()
 
 plt.tight_layout()
-plt.savefig(f'{figdir}/temp_mort.png', dpi=100)
-plt.clf()    
+# plt.savefig(f'{figdir}/temp_mort.png', dpi=100)
+# plt.clf()    
 
 #%%
 
@@ -190,5 +191,12 @@ plt.legend(handles=handles)
 
     
 plt.tight_layout()
-plt.savefig(f'{figdir}/temp_mort_percentiles.png', dpi=100)
+# plt.savefig(f'{figdir}/temp_mort_percentiles.png', dpi=100)
 # plt.clf()     
+
+
+#%%
+
+with open(f'{datadir}/outputs/params.pickle', 'wb') as handle:
+    pickle.dump(params_percentiles, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
