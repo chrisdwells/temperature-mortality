@@ -81,7 +81,7 @@ plt.ylabel('Mortality cf pi (solid), cf 2010 (dashed)')
 plt.legend()
 
 plt.tight_layout()
-# plt.savefig(f'{figdir}/temp_mort.png', dpi=100)
+plt.savefig(f'{figdir}/temp_mort.png', dpi=100)
 # plt.clf()    
 
 #%%
@@ -114,9 +114,7 @@ for impact in impacts.keys():
 
 params_percentiles = {}
 
-percentiles = np.asarray([0.025, 0.5, 0.975])
-
-linestyle_list = ['dotted', 'solid', 'dashed']
+percentiles = np.linspace(0.025, 0.975, 11)
 
 for impact in impacts.keys():
     params_percentiles[impact] = {}
@@ -191,7 +189,7 @@ plt.legend(handles=handles)
 
     
 plt.tight_layout()
-# plt.savefig(f'{figdir}/temp_mort_percentiles.png', dpi=100)
+plt.savefig(f'{figdir}/temp_mort_percentiles.png', dpi=100)
 # plt.clf()     
 
 
@@ -199,4 +197,35 @@ plt.tight_layout()
 
 with open(f'{datadir}/outputs/params.pickle', 'wb') as handle:
     pickle.dump(params_percentiles, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+#%%
+
+output_dict = {}
+output_dict['Percentiles'] = percentiles
+output_dict['Demographics.Cold mortality sensitivity to T[1]'
+            ] = np.full(percentiles.shape, np.nan)
+output_dict['Demographics.Cold mortality sensitivity to T2[1]'
+            ] = np.full(percentiles.shape, np.nan)
+output_dict['Demographics.Hot mortality sensitivity to T[1]'
+            ] = np.full(percentiles.shape, np.nan)
+output_dict['Demographics.Hot mortality sensitivity to T2[1]'
+            ] = np.full(percentiles.shape, np.nan)
+
+for perc_i, percentile in enumerate(percentiles):
+    output_dict['Demographics.Cold mortality sensitivity to T[1]'
+                ][perc_i] = params_percentiles['cold'][percentile][0]
+    
+    output_dict['Demographics.Cold mortality sensitivity to T2[1]'
+                ][perc_i] = params_percentiles['cold'][percentile][1]
+    
+    output_dict['Demographics.Hot mortality sensitivity to T[1]'
+                ][perc_i] = params_percentiles['hot'][percentile][0]
+    
+    output_dict['Demographics.Hot mortality sensitivity to T2[1]'
+                ][perc_i] = params_percentiles['hot'][percentile][1]
+
+
+with open(f'{datadir}/outputs/mortality_output_dict.pickle', 'wb') as handle:
+    pickle.dump(output_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
