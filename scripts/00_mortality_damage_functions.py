@@ -213,16 +213,16 @@ output_dict['Demographics.Hot mortality sensitivity to T2[1]'
 
 for perc_i, percentile in enumerate(percentiles):
     output_dict['Demographics.Cold mortality sensitivity to T[1]'
-                ][perc_i] = params_percentiles['cold'][percentile][1]
+                ][perc_i] = params_percentiles['cold'][percentile][1]*0.01 # from % to fraction
     
     output_dict['Demographics.Cold mortality sensitivity to T2[1]'
-                ][perc_i] = params_percentiles['cold'][percentile][2]
+                ][perc_i] = params_percentiles['cold'][percentile][2]*0.01
     
     output_dict['Demographics.Hot mortality sensitivity to T[1]'
-                ][perc_i] = params_percentiles['hot'][percentile][1]
+                ][perc_i] = params_percentiles['hot'][percentile][1]*0.01
     
     output_dict['Demographics.Hot mortality sensitivity to T2[1]'
-                ][perc_i] = params_percentiles['hot'][percentile][2]
+                ][perc_i] = params_percentiles['hot'][percentile][2]*0.01
 
 
 with open(f'{datadir}/outputs/mortality_output_dict.pickle', 'wb') as handle:
